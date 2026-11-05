@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Librarify</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#15121f;--raise:#1e1a2d;--line:#2e2842;--ink:#f0ebe3;--mut:#9b94ad;--lamp:#ffb454;--ok:#7ddfa1;--bad:#ff7a85;--out:#a3a8ff;
+--serif:'Fraunces',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(900px 500px at 85% -10%,#2a1f45 0,transparent 70%),var(--bg);color:var(--ink);font:15px/1.5 var(--sans);min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+h1,h2,h3{font-family:var(--serif);font-weight:700;margin:0}
+.mut{color:var(--mut)}
+button{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;transition:background .15s,border-color .15s}
+button:hover{border-color:var(--mut)}
+button.pri{background:var(--lamp);border-color:var(--lamp);color:#241a05;font-weight:700}
+button.pri:hover{background:#ffc47a}
+button.ghost{background:transparent}
+button.sm{padding:4px 10px;font-size:13px;border-radius:8px}
+button.danger:hover{border-color:var(--bad);color:var(--bad)}
+input,select{background:#110e1a;border:1px solid var(--line);border-radius:10px;padding:9px 12px;width:100%}
+input:focus,select:focus{border-color:var(--lamp);outline:none}
+label{display:block;margin-bottom:12px;color:var(--mut);font-size:14px}
+label input,label select{margin-top:4px;color:var(--ink)}
+
+/* login */
+.login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.hero{padding:56px 6vw 8vw;display:flex;flex-direction:column;justify-content:space-between;gap:48px}
+.mark{font:700 clamp(28px,3vw,40px)/1 var(--serif)}.mark i{color:var(--lamp);font-style:normal}
+.mark small{display:block;margin-top:8px;font:400 15px var(--sans);color:var(--mut)}
+.hero h1{font-size:clamp(44px,6vw,84px);line-height:1;letter-spacing:-.02em}
+.hero p{max-width:34ch;font-size:18px}
+.panel{display:grid;place-items:center;padding:24px}
+.panel form{width:min(380px,100%);background:var(--raise);border:1px solid var(--line);border-radius:20px;padding:32px}
+.panel h2{font-size:26px;margin-bottom:20px}
+.panel .pri{width:100%;padding:11px;margin-top:4px}
+.panel .alt{width:100%;margin-top:10px}
+.msg{min-height:20px;color:var(--bad);font-size:14px;margin:4px 0}
+.note{margin-top:16px;font-size:13px;color:var(--mut);text-align:center}
+
+/* shell */
+header{display:flex;align-items:center;gap:24px;padding:14px 32px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(21,18,31,.85);backdrop-filter:blur(10px);z-index:5;flex-wrap:wrap}
+.brand{font:700 22px var(--serif);margin-right:8px}
+.brand i{color:var(--lamp);font-style:normal}
+nav{display:flex;gap:4px;flex:1}
+nav button{border:0;background:none;color:var(--mut);padding:8px 14px}
+nav button.on{background:var(--raise);color:var(--ink);box-shadow:inset 0 -2px var(--lamp);border-radius:10px 10px 4px 4px}
+.who{display:flex;align-items:center;gap:10px}
+.who b{display:block;line-height:1.2}.who small{color:var(--mut)}
+main{padding:32px;max-width:1200px;margin:auto}
+.top{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.top h2{font-size:32px}
+.bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.bar input{max-width:320px}.bar select{max-width:200px}
+
+/* tables */
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--raise)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-weight:500;color:var(--mut);padding:12px 16px;border-bottom:1px solid var(--line);font-size:13px}
+td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border:0}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td small{display:block;color:var(--mut)}
+.acts{text-align:right;white-space:nowrap}.acts button{margin-left:6px}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:13px;border:1px solid}
+.free,.ok{color:var(--ok);border-color:#2f6b4a}.out{color:var(--out);border-color:#43477f}
+.overdue,.bad{color:var(--bad);border-color:#7a3340}.done{color:var(--mut);border-color:var(--line)}
+.empty{padding:48px;text-align:center;color:var(--mut)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.seg button{border:0;border-radius:0;background:none;color:var(--mut)}
+.seg button.on{background:var(--raise);color:var(--ink);box-shadow:inset 0 -2px var(--lamp)}
+
+/* overview: one readable sentence, numbers do the talking */
+.story{font:500 clamp(26px,3.6vw,44px)/1.35 var(--serif);max-width:24em;margin:8px 0 28px}
+.story em{font-style:normal;color:var(--lamp);border-bottom:2px solid var(--line)}
+.story em.bad{color:var(--bad);border-color:#7a3340}
+.pace{color:var(--mut);max-width:48ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:32px}
+.card{background:var(--raise);border:1px solid var(--line);border-radius:16px;padding:20px}
+.card h3{font-size:16px;color:var(--mut);font-weight:500;margin-bottom:12px;font-family:var(--sans)}
+.card .big{font:700 30px/1.1 var(--serif);color:var(--lamp)}
+.card ol,.card ul{margin:0;padding-left:20px}.card li{margin-bottom:6px}.card li small{color:var(--mut)}
+.fact{grid-column:1/-1;border-left:3px solid var(--lamp);font:500 18px/1.5 var(--serif)}
+.fact small{display:block;font:400 13px var(--sans);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em}
+.news{margin-top:32px}.news h3{font-size:22px;margin-bottom:12px}
+.news a{display:block;padding:12px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none}
+.news a:hover b{color:var(--lamp)}.news a small{display:block;color:var(--mut)}
+
+/* dialogs + toasts */
+.ov{position:fixed;inset:0;background:rgba(8,6,14,.7);display:grid;place-items:center;padding:16px;z-index:20}
+.ov form{width:min(420px,100%);background:var(--raise);border:1px solid var(--line);border-radius:20px;padding:28px;animation:pop .18s ease-out}
+@keyframes pop{from{transform:translateY(8px) scale(.98);opacity:0}}
+.ov h3{font-size:22px;margin-bottom:14px}
+.ov .row{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+.err{color:var(--bad);font-size:14px;min-height:20px}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:grid;gap:8px;z-index:30}
+#toast div{background:var(--ink);color:#1a1426;padding:10px 18px;border-radius:12px;font-weight:500;animation:pop .2s}
+#toast div.bad{background:var(--bad)}
+@media(max-width:800px){.login{grid-template-columns:1fr}.hero{padding:40px 24px 8px}header,main{padding-left:16px;padding-right:16px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div><div id="toast"></div>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const S = {user:null, tab:"", q:"", cat:"All", mode:"active", rows:[]};
+const LIB = () => S.user.role === "librarian";
+
+async function api(a, d = {}) {
+  let r, j;
+  try { r = await fetch("/api/" + a, {method:"POST", body:JSON.stringify(d)}); j = await r.json(); }
+  catch { throw new Error("offline"); }
+  if (!r.ok) { if (r.status === 401 && a !== "login" && a !== "me") { S.user = null; boot(); } throw new Error(j.error); }
+  return j;
+}
+function toast(m, bad) {
+  const t = document.createElement("div"); t.textContent = m; if (bad) t.className = "bad";
+  $("#toast").append(t); setTimeout(() => t.remove(), 3500);
+}
+function modal(title, fields, ok, fn, msg = "") {
+  const d = document.createElement("div"); d.className = "ov";
+  d.innerHTML = `<form><h3>${esc(title)}</h3>${msg ? `<p class="mut">${esc(msg)}</p>` : ""}${fields.map(f => `<label>${esc(f.l)}${
+    f.t === "select" ? `<select name="${f.k}">${f.o.map(o => `<option>${esc(o)}</option>`).join("")}</select>`
+    : `<input name="${f.k}" type="${f.t || "text"}" value="${esc(f.v)}" ${f.ro ? "readonly" : ""} ${f.dl ? `list="dl_${f.k}"` : ""} autocomplete="off">${
+      f.dl ? `<datalist id="dl_${f.k}">${f.dl.map(o => `<option value="${esc(o)}">`).join("")}</datalist>` : ""}`}</label>`).join("")
+    }<div class="err"></div><div class="row"><button type="button" class="ghost">Cancel</button><button class="pri">${esc(ok)}</button></div></form>`;
+  document.body.append(d);
+  const f = d.querySelector("form");
+  d.onclick = e => { if (e.target === d) d.remove(); };
+  f.querySelector(".ghost").onclick = () => d.remove();
+  f.onsubmit = async e => {
+    e.preventDefault();
+    try { await fn(Object.fromEntries(new FormData(f))); d.remove(); }
+    catch (x) { f.querySelector(".err").textContent = x.message; }
+  };
+  (f.querySelector("input:not([readonly]),select") || f.querySelector(".pri")).focus();
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelector(".ov:last-of-type")?.remove(); });
+const same = (v, msg) => { if (v.new !== v.confirm) throw new Error(msg || "Passwords do not match."); };
+const pwFields = [{k:"new", l:"New password", t:"password"}, {k:"confirm", l:"Confirm password", t:"password"}];
+
+/* ---------- login ---------- */
+async function boot() {
+  try { S.user = await api("me"); }
+  catch (x) {
+    S.user = null;
+    if (x.message === "offline") {
+      $("#app").innerHTML = `<main style="max-width:560px;margin-top:12vh"><h2>The library server isn't running</h2>
+        <p class="mut">This page needs the Python server. Open a terminal in the folder with <b>database.py</b> and run:</p>
+        <p><code>python library_web.py</code></p>
+        <p class="mut">Then go to <b>http://localhost:8000</b> in your browser. Opening index.html directly will not work.</p></main>`;
+      return;
+    }
+  }
+  if (!S.user) return loginView();
+  S.tab = LIB() ? "overview" : "books"; shell();
+}
+async function loginView() {
+  $("#app").innerHTML = `<div class="login"><section class="hero"><div class="mark">Librarify<i>.</i><small>A library management system</small></div><div><h1>Find the next<br>good book.</h1>
+    <p class="mut">Search the shelves, see what's due, and keep the library running smoothly.</p></div></section>
+    <section class="panel"><form id="lf"><h2>Log in</h2>
+    <label>Username<input name="username" autocomplete="username" autofocus></label>
+    <label>Password<input name="password" type="password" autocomplete="current-password"></label>
+    <div class="msg" id="lm"></div><button class="pri">Log in</button>
+    <button type="button" class="alt ghost" data-a="signup">New member? Create an account</button></form></section></div>`;
+  $("#lf").onsubmit = async e => {
+    e.preventDefault();
+    try { S.user = (await api("login", Object.fromEntries(new FormData(e.target)))).user; S.tab = LIB() ? "overview" : "books"; shell(); }
+    catch (x) { $("#lm").textContent = x.message; e.target.password.value = ""; }
+  };
+}
+
+/* ---------- shell ---------- */
+function shell() {
+  const tabs = LIB() ? [["overview","Overview"],["books","Books"],["members","Members"],["loans","Loans"]] : [["books","Browse books"],["loans","My books"]];
+  $("#app").innerHTML = `<header><div class="brand">Librarify<i>.</i></div><nav>${tabs.map(([k, n]) =>
+    `<button data-a="tab" data-id="${k}" class="${k === S.tab ? "on" : ""}">${n}</button>`).join("")}</nav>
+    <div class="who"><span><b>${esc(S.user.name)}</b><small>${S.user.role}</small></span>
+    <button class="sm" data-a="pw">Change password</button><button class="sm" data-a="out">Log out</button></div></header><main id="v"></main>`;
+  view();
+}
+async function view() {
+  try { await ({overview:vOverview, books:vBooks, members:vMembers, loans:vLoans})[S.tab](); }
+  catch (x) { toast(x.message, 1); }
+}
+const table = (heads, rows, empty) => rows.length
+  ? `<div class="wrap"><table><thead><tr>${heads.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`
+  : `<div class="wrap empty">${empty}</div>`;
+
+/* ---------- views ---------- */
+async function vOverview() {
+  const s = await api("stats");
+  $("#v").innerHTML = `<div class="top"><h2>Today at the library</h2></div>
+    <p class="story"><em>${s.books}</em> books on the shelves, <em>${s.issued}</em> out with <em>${s.members}</em> members,
+    and <em class="${s.overdue ? "bad" : ""}">${s.overdue}</em> overdue.</p>
+    <p class="pace">${s.overdue ? "Check the Loans tab to see who needs a reminder." : "Nothing is overdue. Nice."}</p>
+    <div class="grid" id="ins"></div><section class="news" id="news"></section>`;
+  loadInsights(); loadNews();
+}
+async function loadInsights() {
+  let i; try { i = await api("insights"); } catch { return; }
+  const el = $("#ins"); if (!el) return;
+  const list = (rows, f) => rows.length ? `<ol>${rows.map(f).join("")}</ol>` : `<p class="mut">Nothing yet.</p>`;
+  el.innerHTML = `<div class="card fact"><small>Reading fact of the day</small>${esc(i.fact)}</div>
+    <div class="card"><h3>Most borrowed</h3>${list(i.popular_books, b => `<li>${esc(b.title)} <small>${b.times}x</small></li>`)}</div>
+    <div class="card"><h3>Due in the next 3 days</h3>${i.due_soon.length ? `<ul>${i.due_soon.map(d =>
+      `<li>${esc(d.title)} <small>${esc(d.name)}, ${esc(d.due_date)}</small></li>`).join("")}</ul>` : `<p class="mut">No returns due soon.</p>`}</div>
+    <div class="card"><h3>Popular category</h3><div class="big">${i.top_category ? esc(i.top_category.category) : "None yet"}</div>
+      <p class="mut">${i.top_category ? i.top_category.times + " loans in total" : "Issue a book to start tracking."}</p></div>
+    <div class="card"><h3>Top reader</h3><div class="big">${i.top_reader ? esc(i.top_reader.name) : "None yet"}</div>
+      <p class="mut">${i.top_reader ? i.top_reader.times + " books borrowed" : ""}</p></div>
+    <div class="card"><h3>This month</h3><div class="big">${i.loans_this_month}</div><p class="mut">books issued</p></div>
+    <div class="card"><h3>Shelf usage</h3><div class="big">${i.in_use_percent}%</div><p class="mut">of books are out, ${i.never_borrowed} never borrowed</p></div>
+    <div class="card"><h3>Fines collected</h3><div class="big">₹${i.fines_collected}</div><p class="mut">from returned late books</p></div>`;
+}
+async function loadNews() {
+  const el = $("#news"); if (!el) return;
+  el.innerHTML = `<h3>Book news</h3><p class="mut">Loading headlines...</p>`;
+  try {
+    const n = await api("news");
+    if (!$("#news")) return;
+    el.innerHTML = `<h3>Book news</h3>` + n.map(x => `<a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer"><b>${esc(x.title)}</b>
+      <small>${esc(x.source)} ${esc(x.date)}</small></a>`).join("");
+  } catch (x) { if ($("#news")) $("#news").innerHTML = `<h3>Book news</h3><p class="mut">${esc(x.message)}</p>`; }
+}
+async function vBooks() {
+  const cats = await api("categories");
+  if (!["All", ...cats].includes(S.cat)) S.cat = "All";
+  $("#v").innerHTML = `<div class="top"><h2>${LIB() ? "Books" : "Browse books"}</h2>${LIB() ? `<button class="pri" data-a="add">Add book</button>` : ""}</div>
+    <div class="bar"><input id="q" placeholder="Search title, author or ID" value="${esc(S.q)}">
+    <select id="cat">${["All", ...cats].map(c => `<option ${c === S.cat ? "selected" : ""}>${esc(c)}</option>`).join("")}</select></div>
+    <div id="t"></div>${LIB() ? "" : `<p class="mut">To borrow a book, ask the librarian to issue it to your username.</p>`}`;
+  let timer;
+  $("#q").oninput = e => { S.q = e.target.value; clearTimeout(timer); timer = setTimeout(loadBooks, 200); };
+  $("#cat").onchange = e => { S.cat = e.target.value; loadBooks(); };
+  loadBooks();
+}
+async function loadBooks() {
+  S.rows = await api("books", {search:S.q, category:S.cat});
+  $("#t").innerHTML = table(["ID", "Book", "Category", "Status", "Due", ...(LIB() ? [""] : [])], S.rows.map(b => `<tr>
+    <td class="mut">${esc(b.book_id)}</td><td><b>${esc(b.title)}</b><small>${esc(b.author)}</small></td>
+    <td>${esc(b.category)}</td><td><span class="chip ${b.state}">${esc(b.status)}</span></td><td>${b.due}</td>
+    ${LIB() ? `<td class="acts">${b.state === "free" ? `<button class="sm" data-a="issue" data-id="${esc(b.book_id)}">Issue</button>`
+      : `<button class="sm" data-a="ret" data-id="${esc(b.book_id)}">Return</button>`}
+      <button class="sm" data-a="edit" data-id="${esc(b.book_id)}">Edit</button>
+      <button class="sm danger" data-a="del" data-id="${esc(b.book_id)}">Delete</button></td>` : ""}</tr>`),
+    "No books match. Try a different search or category.");
+}
+async function vMembers() {
+  const m = await api("members");
+  $("#v").innerHTML = `<div class="top"><h2>Members</h2><button class="pri" data-a="addm">Add member</button></div>` +
+    table(["Username", "Name", "Phone", "Books held", "Member since", ""], m.map(x => `<tr><td>${esc(x.username)}</td><td><b>${esc(x.name)}</b></td>
+      <td>${esc(x.phone)}</td><td>${x.held}</td><td>${esc(x.created_on)}</td><td class="acts">
+      <button class="sm" data-a="reset" data-id="${x.id}">Reset password</button>
+      <button class="sm danger" data-a="rm" data-id="${x.id}">Remove</button></td></tr>`), "No members yet. Add the first one.");
+}
+async function vLoans() {
+  const modes = [["active","Currently issued"],["overdue","Overdue"],["all","Full history"]];
+  const rows = await api("loans", {mode:S.mode});
+  $("#v").innerHTML = `<div class="top"><h2>${LIB() ? "Loans" : "My books"}</h2></div>
+    <div class="seg">${modes.map(([k, n]) => `<button data-a="mode" data-id="${k}" class="${k === S.mode ? "on" : ""}">${n}</button>`).join("")}</div>` +
+    table(["Book", ...(LIB() ? ["Member"] : []), "Issued", "Due", "Returned", "Fine", "Status"], rows.map(l => {
+      const k = l.status === "Returned" ? "done" : l.status === "On time" ? "ok" : "bad";
+      return `<tr><td><b>${esc(l.title)}</b></td>${LIB() ? `<td>${esc(l.name)}<small>${esc(l.username)}</small></td>` : ""}
+      <td>${l.issue_date}</td><td>${l.due_date}</td><td>${l.return_date || ""}</td><td>${l.fine ? "₹" + l.fine : ""}</td>
+      <td><span class="chip ${k}">${esc(l.status)}</span></td></tr>`;
+    }), "Nothing here yet.");
+}
+
+/* ---------- actions ---------- */
+const bookFields = async (b = {}) => [
+  {k:"book_id", l:"Book ID", v:b.book_id, ro:!!b.book_id}, {k:"title", l:"Title", v:b.title}, {k:"author", l:"Author", v:b.author},
+  {k:"category", l:"Category", v:b.category || "General", dl:await api("categories")}];
+const memberForm = (done) => modal("Create member account", [
+  {k:"name", l:"Full name"}, {k:"phone", l:"Phone (10 digits)"}, {k:"username", l:"Username"},
+  {k:"password", l:"Password", t:"password"}, {k:"confirm", l:"Confirm password", t:"password"}],
+  "Create account", async v => {
+    if (v.password !== v.confirm) throw new Error("Passwords do not match.");
+    await api("signup", v); toast(`Account '${v.username.trim().toLowerCase()}' created`); done && done();
+  });
+const H = {
+  tab: id => { S.tab = id; shell(); },
+  mode: id => { S.mode = id; view(); },
+  out: async () => { await api("logout"); S.user = null; loginView(); },
+  signup: () => memberForm(),
+  addm: () => memberForm(view),
+  pw: () => modal("Change password", [{k:"current", l:"Current password", t:"password"}, ...pwFields], "Change password",
+    async v => { same(v, "New passwords do not match."); await api("change_pw", v); toast("Password updated"); }),
+  add: async () => modal("Add book", await bookFields(), "Add book", async v => { await api("add_book", v); toast("Book added"); loadBooks(); }),
+  edit: async id => modal("Edit book", await bookFields(S.rows.find(b => b.book_id === id)), "Save changes",
+    async v => { await api("edit_book", v); toast("Book updated"); loadBooks(); }),
+  del: id => modal("Delete book", [], "Delete", async () => { await api("delete_book", {book_id:id}); toast("Book deleted"); loadBooks(); },
+    `Delete book ${id} permanently? Its loan history goes with it.`),
+  issue: async id => modal("Issue book", [{k:"username", l:"Member username", t:"select", o:(await api("members")).map(m => m.username)}], "Issue book",
+    async v => { const r = await api("issue", {book_id:id, ...v}); toast(`Issued. Due on ${r.due}`); loadBooks(); }),
+  ret: async id => { const r = await api("return", {book_id:id});
+    toast(r.fine ? `Returned ${r.late_days} day(s) late. Fine to collect: ₹${r.fine}` : "Returned on time. No fine.", !!r.fine); loadBooks(); },
+  reset: id => modal("Reset password", pwFields, "Reset password",
+    async v => { same(v); await api("reset_pw", {id, new:v.new}); toast("Password reset"); }),
+  rm: id => modal("Remove member", [], "Remove", async () => { await api("remove", {id}); toast("Member removed"); view(); },
+    "They will no longer be able to log in."),
+};
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-a]"); if (!b) return;
+  try { await H[b.dataset.a](b.dataset.id); } catch (x) { toast(x.message, 1); }
+});
+boot();
+</script>
+</body>
+</html>
